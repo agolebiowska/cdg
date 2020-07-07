@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/agolebiowska/cdg/files"
+	"github.com/agolebiowska/cdg/pkg/files"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
