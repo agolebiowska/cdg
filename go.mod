@@ -1,4 +1,4 @@
-module cdg
+module github.com/agolebiowska/cdg
 
 go 1.13
 
