@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	assetsPath = "../../assets"
+	assetsPath = "github.com/agolebiowska/cdg/assets/"
 )
 
 func run() {
@@ -22,7 +22,7 @@ func run() {
 		panic(err)
 	}
 
-	playerPic := files.LoadPicture(assetsPath + "player.png")
+	playerPic, err := files.LoadPicture("player.png")
 	if err != nil {
 		panic(err)
 	}
