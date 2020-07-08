@@ -64,10 +64,6 @@ func run() {
 	}
 }
 
-func draw() {
-	//TODO
-}
-
 func main() {
 	pixelgl.Run(run)
 }

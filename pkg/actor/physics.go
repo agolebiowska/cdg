@@ -22,6 +22,18 @@ func NewPhysics() *Phys {
 }
 
 func (p *Phys) Update() {
+	if p.ref.IsPlayer == false {
+		return
+	}
+
+	//solids := map[pixel.Vec]string{}
+	//for _, actor := range Global.State.Scene.Actors {
+	//	if actor.Tag == "solid" {
+	//		solids[actor.GetPos()] = actor.Tag
+	//		log.Println(solids)
+	//	}
+	//}
+
 	// apply controls
 	switch {
 	case Global.Ctrl.X < 0:
