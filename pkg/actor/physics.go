@@ -10,9 +10,18 @@ type Phys struct {
 	Rect  pixel.Rect
 
 	vel pixel.Vec
+
+	ref *Actor
 }
 
-func (p *Phys) update() {
+func NewPhysics() *Phys {
+	return &Phys{
+		Speed: 80,
+		Rect:  pixel.R(-Global.TileSize, -Global.TileSize, Global.TileSize, Global.TileSize),
+	}
+}
+
+func (p *Phys) Update() {
 	// apply controls
 	switch {
 	case Global.Ctrl.X < 0:
@@ -29,4 +38,12 @@ func (p *Phys) update() {
 	}
 
 	p.Rect = p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
+}
+
+func (p *Phys) SetRef(ref *Actor) {
+	p.ref = ref
+}
+
+func (p *Phys) GetType() string {
+	return "physics"
 }

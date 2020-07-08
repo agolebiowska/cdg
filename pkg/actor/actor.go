@@ -1,62 +1,107 @@
 package actor
 
 import (
-	"github.com/agolebiowska/cdg/pkg/files"
 	. "github.com/agolebiowska/cdg/pkg/globals"
-	"github.com/agolebiowska/cdg/pkg/world"
 	"github.com/faiface/pixel"
 )
 
 type Actor struct {
-	IsPlayer bool
-	Phys     *Phys
-	Anim     *Anim
+	Tag        string
+	IsPlayer   bool
+	Components []Component
 }
 
-func NewPlayer(from string) *Actor {
-	sheet, anims, err := files.LoadAnimationSheet(
-		Global.Assets+from+".png",
-		Global.Assets+from+".csv",
-		Global.TileSize,
-	)
-	if err != nil {
-		panic(err)
+func NewPlayer() *Actor {
+	actor := &Actor{
+		Tag:        "player",
+		IsPlayer:   true,
+		Components: []Component{},
 	}
 
-	return &Actor{
-		IsPlayer: true,
-		Phys: &Phys{
-			Speed: 80,
-			Rect:  pixel.R(-Global.TileSize, -Global.TileSize, Global.TileSize, Global.TileSize),
-		},
-		Anim: &Anim{
-			Sheet: sheet,
-			Anims: anims,
-			Rate:  1.0 / 10,
-			Dir:   +1,
-		},
+	actor.AddComponent(NewPhysics())
+	actor.AddComponent(NewAnim("player"))
+
+	return actor
+}
+
+func New(vec pixel.Vec) *Actor {
+	actor := &Actor{
+		IsPlayer: false,
 	}
+
+	actor.AddComponent(NewPhysics())
+	actor.MoveTo(vec)
+
+	return actor
+}
+
+func (a *Actor) SetTag(tag string) {
+	a.Tag = tag
+}
+
+func (a *Actor) AddComponent(c Component) {
+	c.SetRef(a)
+	a.Components = append(a.Components, c)
 }
 
 func (a *Actor) Update() {
-	if a.IsPlayer {
-		a.Phys.update()
+	for _, component := range a.Components {
+		component.Update()
 	}
-	a.Anim.update(a.Phys)
 }
 
-func (a *Actor) Draw(where *world.Map) {
-	if a.Anim.sprite == nil {
-		a.Anim.sprite = pixel.NewSprite(nil, pixel.Rect{})
+func (a *Actor) Draw() {
+	var anim *Anim
+	var phys *Phys
+	for _, c := range a.Components {
+		if c.GetType() == "animation" {
+			anim = c.(*Anim)
+		}
+		if c.GetType() == "physics" {
+			phys = c.(*Phys)
+		}
+	}
+	if anim == nil {
+		return
+	}
+
+	if anim.Sprite == nil {
+		anim.Sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
 
 	// draw the correct frame with the correct position and direction
-	a.Anim.sprite.Set(a.Anim.Sheet, a.Anim.frame)
-	a.Anim.sprite.Draw(Global.Win, pixel.IM.
+	anim.Sprite.Set(anim.Sheet, anim.Frame)
+	anim.Sprite.Draw(Global.Win, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
-			a.Phys.Rect.W()/a.Anim.sprite.Frame().W(),
-			a.Phys.Rect.H()/a.Anim.sprite.Frame().H(),
+			phys.Rect.W()/anim.Sprite.Frame().W(),
+			phys.Rect.H()/anim.Sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(a.Anim.Dir, 1)),
+		ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)),
 	)
+}
+
+func (a *Actor) MoveTo(vec pixel.Vec) {
+	var phys *Phys
+	for _, c := range a.Components {
+		if c.GetType() == "physics" {
+			phys = c.(*Phys)
+		}
+	}
+	if phys == nil {
+		return
+	}
+	phys.Rect = phys.Rect.Moved(vec)
+}
+
+func (a *Actor) GetPos() pixel.Vec {
+	var phys *Phys
+	for _, c := range a.Components {
+		if c.GetType() == "physics" {
+			phys = c.(*Phys)
+		}
+	}
+	if phys == nil {
+		return pixel.V(0, 0)
+	}
+	return phys.Rect.Center()
 }

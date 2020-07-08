@@ -1,13 +1,11 @@
 package main
 
 import (
-	"github.com/agolebiowska/cdg/pkg/actor"
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/agolebiowska/cdg/pkg/world"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-	"math"
 	"time"
 )
 
@@ -47,8 +45,7 @@ func handleInput() {
 func run() {
 	initScreen()
 
-	fMap := world.New("map")
-	player := actor.NewPlayer("player")
+	startScene := world.NewScene("untitled")
 
 	last := time.Now()
 	for !Global.Win.Closed() {
@@ -56,18 +53,13 @@ func run() {
 		last = time.Now()
 
 		Global.Ctrl = pixel.ZV
-		// lerp the camera position towards the actor
-		Global.CamPos = pixel.Lerp(Global.CamPos, player.Phys.Rect.Center(), 1-math.Pow(1.0/128, Global.DeltaTime))
-		cam := pixel.IM.Moved(Global.CamPos.Scaled(-1))
-		fMap.Canvas.SetMatrix(cam)
 
 		handleInput()
-		player.Update()
 
 		Global.Win.Clear(colornames.White)
 
-		fMap.Draw()
-		player.Draw(fMap)
+		startScene.Update()
+		startScene.Draw()
 		Global.Win.Update()
 	}
 }
