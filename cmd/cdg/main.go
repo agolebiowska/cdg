@@ -2,7 +2,7 @@ package main
 
 import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
-	"github.com/agolebiowska/cdg/pkg/world"
+	"github.com/agolebiowska/cdg/pkg/scene"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
@@ -45,7 +45,7 @@ func handleInput() {
 func run() {
 	initScreen()
 
-	startScene := world.NewScene("untitled")
+	startScene := scene.New("untitled")
 
 	last := time.Now()
 	for !Global.Win.Closed() {

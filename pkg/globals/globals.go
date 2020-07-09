@@ -7,6 +7,10 @@ import (
 	"image/color"
 )
 
+type State struct {
+	MapData map[pixel.Vec]string
+}
+
 type GlobalVars struct {
 	PrimaryMonitor *pixelgl.Monitor
 	WindowHeight   float64
@@ -20,6 +24,7 @@ type GlobalVars struct {
 	TileSize       float64
 	Ctrl           pixel.Vec
 	CamPos         pixel.Vec
+	State          *State
 }
 
 var Global = &GlobalVars{
@@ -33,4 +38,5 @@ var Global = &GlobalVars{
 	TileSize:     32,
 	Ctrl:         pixel.ZV,
 	CamPos:       pixel.ZV,
+	State:        &State{map[pixel.Vec]string{}},
 }

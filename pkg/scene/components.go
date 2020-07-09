@@ -1,4 +1,4 @@
-package actor
+package scene
 
 type Component interface {
 	GetType() string

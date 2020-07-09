@@ -1,4 +1,4 @@
-package actor
+package scene
 
 import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
@@ -24,7 +24,7 @@ func NewPlayer() *Actor {
 	return actor
 }
 
-func New(vec pixel.Vec) *Actor {
+func NewActor(vec pixel.Vec) *Actor {
 	actor := &Actor{
 		IsPlayer: false,
 	}

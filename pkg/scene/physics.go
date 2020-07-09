@@ -1,8 +1,10 @@
-package actor
+package scene
 
 import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
+	"log"
+	"math"
 )
 
 type Phys struct {
@@ -26,14 +28,6 @@ func (p *Phys) Update() {
 		return
 	}
 
-	//solids := map[pixel.Vec]string{}
-	//for _, actor := range Global.State.Scene.Actors {
-	//	if actor.Tag == "solid" {
-	//		solids[actor.GetPos()] = actor.Tag
-	//		log.Println(solids)
-	//	}
-	//}
-
 	// apply controls
 	switch {
 	case Global.Ctrl.X < 0:
@@ -49,7 +43,17 @@ func (p *Phys) Update() {
 		p.vel.Y = 0
 	}
 
-	p.Rect = p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
+	m := p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
+	X := m.Center().X
+	Y := m.Center().Y
+	log.Println(Global.State.MapData)
+	log.Println(Global.State.MapData[pixel.V(math.Round(X), math.Round(Y))])
+	if Global.State.MapData[pixel.V(math.Round(X), math.Round(Y))] == "solid" {
+		log.Println(pixel.V(math.Round(X), math.Round(Y)))
+		return
+	}
+
+	p.Rect = m
 }
 
 func (p *Phys) SetRef(ref *Actor) {

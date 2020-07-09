@@ -1,4 +1,4 @@
-package actor
+package scene
 
 import (
 	"github.com/agolebiowska/cdg/pkg/files"

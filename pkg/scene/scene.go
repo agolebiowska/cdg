@@ -1,7 +1,6 @@
-package world
+package scene
 
 import (
-	"github.com/agolebiowska/cdg/pkg/actor"
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/bcvery1/tilepix"
 	"github.com/faiface/pixel"
@@ -14,10 +13,10 @@ import (
 type Scene struct {
 	Canvas  *pixelgl.Canvas
 	Tilemap *tilepix.Map
-	Actors  []*actor.Actor
+	Actors  []*Actor
 }
 
-func NewScene(from string) *Scene {
+func New(from string) *Scene {
 	m, err := tilepix.ReadFile(Global.Assets + from + ".tmx")
 	if err != nil {
 		panic(err)
@@ -28,10 +27,10 @@ func NewScene(from string) *Scene {
 	scene := &Scene{
 		Canvas:  c,
 		Tilemap: m,
-		Actors:  []*actor.Actor{},
+		Actors:  []*Actor{},
 	}
 
-	player := actor.NewPlayer()
+	player := NewPlayer()
 	scene.Add(player)
 
 	//player starting position can be added in tiled as "point"
@@ -41,17 +40,23 @@ func NewScene(from string) *Scene {
 				player.MoveTo(pixel.V(o.X, o.Y))
 			}
 			if objectGroups.Name == "solid" {
-				a := actor.New(pixel.V(o.X, o.Y))
+				a := NewActor(pixel.V(o.X, o.Y))
 				a.SetTag("solid")
 				scene.Actors = append(scene.Actors, a)
 			}
 		}
 	}
 
+	for _, actor := range scene.Actors {
+		if actor.Tag == "solid" {
+			Global.State.MapData[pixel.V(math.Round(actor.GetPos().X), math.Round(actor.GetPos().Y))] = actor.Tag
+		}
+	}
+
 	return scene
 }
 
-func (m *Scene) Add(a *actor.Actor) {
+func (m *Scene) Add(a *Actor) {
 	m.Actors = append(m.Actors, a)
 }
 
@@ -74,7 +79,7 @@ func (m *Scene) Draw() {
 }
 
 func (m *Scene) Update() {
-	var player *actor.Actor
+	var player *Actor
 	for _, actor := range m.Actors {
 		if actor.IsPlayer {
 			player = actor
