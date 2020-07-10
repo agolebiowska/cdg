@@ -56,10 +56,10 @@ func (a *Actor) Draw() {
 	var anim *Anim
 	var phys *Phys
 	for _, c := range a.Components {
-		if c.GetType() == "animation" {
+		if c.GetType() == Animation {
 			anim = c.(*Anim)
 		}
-		if c.GetType() == "physics" {
+		if c.GetType() == Physics {
 			phys = c.(*Phys)
 		}
 	}
@@ -83,7 +83,7 @@ func (a *Actor) Draw() {
 }
 
 func (a *Actor) MoveTo(vec pixel.Vec) {
-	p := *a.GetComponent("physics")
+	p := *a.GetComponent(Physics)
 	if p == nil {
 		return
 	}
@@ -93,7 +93,7 @@ func (a *Actor) MoveTo(vec pixel.Vec) {
 }
 
 func (a *Actor) GetPos() pixel.Vec {
-	p := *a.GetComponent("physics")
+	p := *a.GetComponent(Physics)
 	if p == nil {
 		return pixel.V(0, 0)
 	}
@@ -102,7 +102,7 @@ func (a *Actor) GetPos() pixel.Vec {
 	return phys.Rect.Center()
 }
 
-func (a *Actor) GetComponent(t string) *Component {
+func (a *Actor) GetComponent(t componentType) *Component {
 	for _, c := range a.Components {
 		if c.GetType() == t {
 			return &c

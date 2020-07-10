@@ -1,7 +1,14 @@
 package scene
 
+type componentType string
+
+var (
+	Physics   componentType = "physics"
+	Animation componentType = "animation"
+)
+
 type Component interface {
-	GetType() string
+	GetType() componentType
 	SetRef(a *Actor)
 	Update()
 	// TODO something like this

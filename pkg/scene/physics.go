@@ -45,7 +45,7 @@ func (p *Phys) Update() {
 
 	for _, a := range p.refActor.refScene.Actors {
 		if a.Tag == "solid" {
-			p := *a.GetComponent("physics")
+			p := *a.GetComponent(Physics)
 			if p == nil {
 				continue
 			}
@@ -63,6 +63,6 @@ func (p *Phys) SetRef(ref *Actor) {
 	p.refActor = ref
 }
 
-func (p *Phys) GetType() string {
+func (p *Phys) GetType() componentType {
 	return "physics"
 }

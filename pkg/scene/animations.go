@@ -54,7 +54,7 @@ func (a *Anim) SetRef(ref *Actor) {
 func (a *Anim) Update() {
 	var phys *Phys
 	for _, c := range a.refActor.Components {
-		if c.GetType() == "physics" {
+		if c.GetType() == Physics {
 			phys = c.(*Phys)
 		}
 	}
@@ -97,6 +97,6 @@ func (a *Anim) Update() {
 	}
 }
 
-func (a *Anim) GetType() string {
+func (a *Anim) GetType() componentType {
 	return "animation"
 }

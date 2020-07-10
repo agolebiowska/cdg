@@ -68,7 +68,7 @@ func (m *Scene) Draw() {
 	// DEBUG COLLIDERS
 	for _, actor := range m.Actors {
 		//if actor.Tag == "solid" {
-		p := *actor.GetComponent("physics")
+		p := *actor.GetComponent(Physics)
 		phys := p.(*Phys)
 		//log.Println(phys.Rect.Vertices())
 		imd := imdraw.New(nil)
