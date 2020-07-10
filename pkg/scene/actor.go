@@ -9,6 +9,8 @@ type Actor struct {
 	Tag        string
 	IsPlayer   bool
 	Components []Component
+
+	refScene *Scene
 }
 
 func NewPlayer() *Actor {
@@ -18,19 +20,19 @@ func NewPlayer() *Actor {
 		Components: []Component{},
 	}
 
-	actor.AddComponent(NewPhysics())
+	actor.AddComponent(NewPhysics(16, 16))
 	actor.AddComponent(NewAnim("player"))
 
 	return actor
 }
 
-func NewActor(vec pixel.Vec) *Actor {
+func NewActor(x, y, w, h float64) *Actor {
 	actor := &Actor{
 		IsPlayer: false,
 	}
 
-	actor.AddComponent(NewPhysics())
-	actor.MoveTo(vec)
+	actor.AddComponent(NewPhysics(w, h))
+	actor.MoveTo(pixel.V(x+w, y+h))
 
 	return actor
 }
@@ -81,27 +83,30 @@ func (a *Actor) Draw() {
 }
 
 func (a *Actor) MoveTo(vec pixel.Vec) {
-	var phys *Phys
-	for _, c := range a.Components {
-		if c.GetType() == "physics" {
-			phys = c.(*Phys)
-		}
-	}
-	if phys == nil {
+	p := *a.GetComponent("physics")
+	if p == nil {
 		return
 	}
+	phys := p.(*Phys)
+
 	phys.Rect = phys.Rect.Moved(vec)
 }
 
 func (a *Actor) GetPos() pixel.Vec {
-	var phys *Phys
-	for _, c := range a.Components {
-		if c.GetType() == "physics" {
-			phys = c.(*Phys)
-		}
-	}
-	if phys == nil {
+	p := *a.GetComponent("physics")
+	if p == nil {
 		return pixel.V(0, 0)
 	}
+	phys := p.(*Phys)
+
 	return phys.Rect.Center()
+}
+
+func (a *Actor) GetComponent(t string) *Component {
+	for _, c := range a.Components {
+		if c.GetType() == t {
+			return &c
+		}
+	}
+	return nil
 }

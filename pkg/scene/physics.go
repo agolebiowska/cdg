@@ -3,8 +3,6 @@ package scene
 import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
-	"log"
-	"math"
 )
 
 type Phys struct {
@@ -13,18 +11,18 @@ type Phys struct {
 
 	vel pixel.Vec
 
-	ref *Actor
+	refActor *Actor
 }
 
-func NewPhysics() *Phys {
+func NewPhysics(w, h float64) *Phys {
 	return &Phys{
 		Speed: 80,
-		Rect:  pixel.R(-Global.TileSize, -Global.TileSize, Global.TileSize, Global.TileSize),
+		Rect:  pixel.R(-w, -h, w, h),
 	}
 }
 
 func (p *Phys) Update() {
-	if p.ref.IsPlayer == false {
+	if p.refActor.IsPlayer == false {
 		return
 	}
 
@@ -44,20 +42,25 @@ func (p *Phys) Update() {
 	}
 
 	m := p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
-	X := m.Center().X
-	Y := m.Center().Y
-	log.Println(Global.State.MapData)
-	log.Println(Global.State.MapData[pixel.V(math.Round(X), math.Round(Y))])
-	if Global.State.MapData[pixel.V(math.Round(X), math.Round(Y))] == "solid" {
-		log.Println(pixel.V(math.Round(X), math.Round(Y)))
-		return
+
+	for _, a := range p.refActor.refScene.Actors {
+		if a.Tag == "solid" {
+			p := *a.GetComponent("physics")
+			if p == nil {
+				continue
+			}
+			phys := p.(*Phys)
+			if phys.Rect.Intersect(m) != pixel.R(0, 0, 0, 0) {
+				return
+			}
+		}
 	}
 
 	p.Rect = m
 }
 
 func (p *Phys) SetRef(ref *Actor) {
-	p.ref = ref
+	p.refActor = ref
 }
 
 func (p *Phys) GetType() string {

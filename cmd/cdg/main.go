@@ -56,7 +56,7 @@ func run() {
 
 		handleInput()
 
-		Global.Win.Clear(colornames.White)
+		Global.Win.Clear(colornames.Black)
 
 		startScene.Update()
 		startScene.Draw()

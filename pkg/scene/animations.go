@@ -26,7 +26,7 @@ type Anim struct {
 	Frame  pixel.Rect
 	Sprite *pixel.Sprite
 
-	ref *Actor
+	refActor *Actor
 }
 
 func NewAnim(from string) *Anim {
@@ -48,12 +48,12 @@ func NewAnim(from string) *Anim {
 }
 
 func (a *Anim) SetRef(ref *Actor) {
-	a.ref = ref
+	a.refActor = ref
 }
 
 func (a *Anim) Update() {
 	var phys *Phys
-	for _, c := range a.ref.Components {
+	for _, c := range a.refActor.Components {
 		if c.GetType() == "physics" {
 			phys = c.(*Phys)
 		}
