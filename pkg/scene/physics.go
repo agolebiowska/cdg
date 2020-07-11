@@ -1,7 +1,7 @@
 package scene
 
 import (
-	. "github.com/agolebiowska/cdg/pkg/globals"
+	"github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
 )
 
@@ -28,20 +28,20 @@ func (p *Phys) Update() {
 
 	// apply controls
 	switch {
-	case Global.Ctrl.X < 0:
+	case globals.Global.Ctrl.X < 0:
 		p.vel.X = -p.Speed
-	case Global.Ctrl.X > 0:
+	case globals.Global.Ctrl.X > 0:
 		p.vel.X = +p.Speed
-	case Global.Ctrl.Y < 0:
+	case globals.Global.Ctrl.Y < 0:
 		p.vel.Y = -p.Speed
-	case Global.Ctrl.Y > 0:
+	case globals.Global.Ctrl.Y > 0:
 		p.vel.Y = +p.Speed
 	default:
 		p.vel.X = 0
 		p.vel.Y = 0
 	}
 
-	m := p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
+	m := p.Rect.Moved(p.vel.Scaled(globals.Global.DeltaTime))
 
 	for _, a := range p.refActor.refScene.Actors {
 		if a.Tag == "solid" {

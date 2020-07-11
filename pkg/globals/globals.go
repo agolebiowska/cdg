@@ -24,17 +24,21 @@ type GlobalVars struct {
 	Ctrl           pixel.Vec
 	CamPos         pixel.Vec
 	State          *State
+	Debug          bool
 }
 
 var Global = &GlobalVars{
-	WindowHeight: 768,
-	WindowWidth:  1024,
-	Vsync:        true,
-	ClearColor:   colornames.Black,
-	Win:          &pixelgl.Window{},
-	Title:        "Companion driven Game",
-	Assets:       "../../assets/",
-	TileSize:     32,
-	Ctrl:         pixel.ZV,
-	CamPos:       pixel.ZV,
+	//WindowHeight: 768,
+	WindowHeight: 1080,
+	//WindowWidth:  1024,
+	WindowWidth: 1920,
+	Vsync:       true,
+	ClearColor:  colornames.Black,
+	Win:         &pixelgl.Window{},
+	Title:       "Companion driven Game",
+	Assets:      "../../assets/",
+	TileSize:    32,
+	Ctrl:        pixel.ZV,
+	CamPos:      pixel.ZV,
+	Debug:       false,
 }

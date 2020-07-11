@@ -15,6 +15,7 @@ type Scene struct {
 	Canvas  *pixelgl.Canvas
 	Tilemap *tilepix.Map
 	Actors  []*Actor
+	Camera  *Camera
 }
 
 func New(from string) *Scene {
@@ -24,28 +25,37 @@ func New(from string) *Scene {
 	}
 
 	c := pixelgl.NewCanvas(pixel.R(
-		-Global.WindowWidth/2,
-		-Global.WindowHeight/2,
-		Global.WindowWidth/2,
-		Global.WindowHeight/2))
+		-Global.WindowWidth/4,
+		-Global.WindowHeight/4,
+		Global.WindowWidth/4,
+		Global.WindowHeight/4))
 
 	scene := &Scene{
 		Canvas:  c,
 		Tilemap: m,
 		Actors:  []*Actor{},
+		Camera:  &Camera{},
 	}
 
 	player := NewPlayer()
 	scene.Add(player)
 
+	//scene.Camera.New()
+	//scene.Camera.SetFollow(player)
+
+	// center objects same as the tilemap is centered
+	center := pixel.V(-float64((scene.Tilemap.Width*scene.Tilemap.TileWidth)/2),
+		-float64((scene.Tilemap.Height*scene.Tilemap.TileHeight)/2))
+
 	// player starting position can be added in tiled as "point"
 	for _, objectGroups := range scene.Tilemap.ObjectGroups {
 		for _, o := range objectGroups.Objects {
 			if o.Name == "player" {
-				player.MoveTo(pixel.V(o.X, o.Y))
+				player.MoveTo(pixel.V(center.X+o.X, center.Y+o.Y))
 			}
 			if objectGroups.Name == "solid" {
-				a := NewActor(o.X, o.Y, o.Width/2, o.Height/2)
+				a := NewActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
+
 				a.SetTag("solid")
 				scene.Actors = append(scene.Actors, a)
 			}
@@ -63,24 +73,32 @@ func (m *Scene) Add(a *Actor) {
 func (m *Scene) Draw() {
 	m.Canvas.Clear(colornames.Black)
 
-	m.Tilemap.DrawAll(m.Canvas, color.Transparent, pixel.IM)
+	center := pixel.V(-float64((m.Tilemap.Width*m.Tilemap.TileWidth)/2),
+		-float64((m.Tilemap.Height*m.Tilemap.TileHeight)/2))
+	m.Tilemap.DrawAll(m.Canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
+		Global.Win.Bounds().W()/m.Canvas.Bounds().W(),
+		Global.Win.Bounds().H()/m.Canvas.Bounds().H()),
+	).Moved(center))
+
+	for _, actor := range m.Actors {
+		actor.Draw()
+	}
 
 	// DEBUG COLLIDERS
-	for _, actor := range m.Actors {
-		//if actor.Tag == "solid" {
-		p := *actor.GetComponent(Physics)
-		phys := p.(*Phys)
-		//log.Println(phys.Rect.Vertices())
-		imd := imdraw.New(nil)
-		imd.Color = color.White
-		imd.Push(
-			phys.Rect.Norm().Vertices()[0],
-			phys.Rect.Norm().Vertices()[1],
-			phys.Rect.Norm().Vertices()[2],
-			phys.Rect.Norm().Vertices()[3])
-		imd.Polygon(1)
-		imd.Draw(m.Canvas)
-		//}
+	if Global.Debug {
+		for _, actor := range m.Actors {
+			p := *actor.GetComponent(Physics)
+			phys := p.(*Phys)
+			imd := imdraw.New(nil)
+			imd.Color = color.White
+			imd.Push(
+				phys.Rect.Norm().Vertices()[0],
+				phys.Rect.Norm().Vertices()[1],
+				phys.Rect.Norm().Vertices()[2],
+				phys.Rect.Norm().Vertices()[3])
+			imd.Polygon(1)
+			imd.Draw(m.Canvas)
+		}
 	}
 
 	// stretch the canvas to the window
@@ -91,10 +109,6 @@ func (m *Scene) Draw() {
 		),
 	).Moved(Global.Win.Bounds().Center()))
 	m.Canvas.Draw(Global.Win, pixel.IM.Moved(m.Canvas.Bounds().Center()))
-
-	for _, actor := range m.Actors {
-		actor.Draw()
-	}
 }
 
 func (m *Scene) Update() {
@@ -107,12 +121,25 @@ func (m *Scene) Update() {
 	if player == nil {
 		return
 	}
+
+	//m.Camera.Update()
+
 	// lerp the camera position towards the player
-	Global.CamPos = pixel.Lerp(Global.CamPos, player.GetPos(), 1-math.Pow(1.0/128, Global.DeltaTime))
-	cam := pixel.IM.Moved(Global.CamPos.Scaled(-1))
-	m.Canvas.SetMatrix(cam)
+	//pos := pixel.ZV
+	//pos = pixel.Lerp(pos, player.GetPos(), 1-math.Pow(1.0/128, Global.DeltaTime))
+	//cam := pixel.IM.Moved(pos.Scaled(-1))
+	//m.Canvas.SetMatrix(cam)
 
 	for _, actor := range m.Actors {
 		actor.Update()
 	}
+}
+
+func (s *Scene) GetPlayer() *Actor {
+	for _, a := range s.Actors {
+		if a.IsPlayer {
+			return a
+		}
+	}
+	return nil
 }

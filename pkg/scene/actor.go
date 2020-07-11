@@ -1,7 +1,6 @@
 package scene
 
 import (
-	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
 )
 
@@ -20,7 +19,7 @@ func NewPlayer() *Actor {
 		Components: []Component{},
 	}
 
-	actor.AddComponent(NewPhysics(16, 16))
+	actor.AddComponent(NewPhysics(10, 15))
 	actor.AddComponent(NewAnim("player"))
 
 	return actor
@@ -32,7 +31,7 @@ func NewActor(x, y, w, h float64) *Actor {
 	}
 
 	actor.AddComponent(NewPhysics(w, h))
-	actor.MoveTo(pixel.V(x+w, y+h))
+	actor.MoveTo(pixel.V((x*2)+w, (y*2)+h))
 
 	return actor
 }
@@ -63,7 +62,7 @@ func (a *Actor) Draw() {
 			phys = c.(*Phys)
 		}
 	}
-	if anim == nil {
+	if anim == nil || phys == nil {
 		return
 	}
 
@@ -73,12 +72,15 @@ func (a *Actor) Draw() {
 
 	// draw the correct frame with the correct position and direction
 	anim.Sprite.Set(anim.Sheet, anim.Frame)
-	anim.Sprite.Draw(Global.Win, pixel.IM.
+	anim.Sprite.Draw(a.refScene.Canvas, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
-			phys.Rect.W()/anim.Sprite.Frame().W(),
-			phys.Rect.H()/anim.Sprite.Frame().H(),
+			anim.Sprite.Frame().W()/32,
+			anim.Sprite.Frame().H()/32,
+			//phys.Rect.W()/anim.Sprite.Frame().W(),
+			//phys.Rect.H()/anim.Sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)),
+		//ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)),
+		ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)).Moved(phys.Rect.Center()),
 	)
 }
 
