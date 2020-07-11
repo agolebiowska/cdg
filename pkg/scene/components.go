@@ -3,9 +3,11 @@ package scene
 type componentType string
 
 var (
-	Physics   componentType = "physics"
-	Animation componentType = "animation"
-	Combat    componentType = "combat"
+	Physics     componentType = "physics"
+	Animation   componentType = "animation"
+	Combat      componentType = "combat"
+	Dialogue    componentType = "dialogue"
+	Interaction componentType = "interaction"
 )
 
 type Component interface {

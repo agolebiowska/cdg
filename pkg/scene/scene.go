@@ -63,6 +63,7 @@ func New(from string) *Scene {
 			if objectGroups.Name == "npc" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, 16, 16)
 				a.AddComponent(NewAnim("npc"))
+				a.AddComponent(NewDialogue([]string{"HI", "WHATS UP?", "SURE", "C MON"}))
 				a.SetTag(NPC)
 				scene.Add(a)
 			}

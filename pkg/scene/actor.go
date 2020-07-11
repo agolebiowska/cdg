@@ -130,3 +130,9 @@ func (a *Actor) Destroy() {
 		}
 	}
 }
+
+func (a *Actor) isCollidable() bool {
+	return a.Tag == Solid ||
+		a.Tag == Enemy ||
+		a.Tag == NPC
+}

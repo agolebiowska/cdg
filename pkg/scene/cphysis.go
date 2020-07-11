@@ -4,7 +4,6 @@ import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"log"
 )
 
 type Phys struct {
@@ -73,9 +72,15 @@ func (p *Phys) Update() {
 
 		if phys.Rect.Intersects(talkingRange) && a.Tag == NPC {
 			if Global.Win.JustPressed(pixelgl.KeyE) {
-				log.Println("TALKING")
+				d := *a.GetComponent(Dialogue)
+				if d == nil {
+					return
+				}
+				dial := d.(*Dial)
+				dial.Talk(a)
 			}
 		}
+
 		if phys.Rect.Intersects(combatRange) && a.Tag == Enemy {
 			if Global.Win.JustPressed(pixelgl.MouseButtonLeft) {
 				c := *p.refActor.GetComponent(Combat)
@@ -86,7 +91,8 @@ func (p *Phys) Update() {
 				comb.Attack(a)
 			}
 		}
-		if phys.Rect.Intersects(m) && (a.Tag == Solid || a.Tag == Enemy || a.Tag == NPC) {
+
+		if phys.Rect.Intersects(m) && a.isCollidable() {
 			return
 		}
 	}
