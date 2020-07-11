@@ -10,27 +10,29 @@ func newCombat(hp, dmg float64) *comb {
 	return &comb{hp: hp, dmg: dmg}
 }
 
-func (l *comb) update() {
-	if l.hp <= 0 {
-		l.refActor.destroy()
+func (c *comb) update() {
+	if c.hp <= 0 {
+		c.refActor.destroy()
 	}
 }
 
-func (l *comb) setRef(ref *actor) {
-	l.refActor = ref
+func (c *comb) draw() {}
+
+func (c *comb) setRef(ref *actor) {
+	c.refActor = ref
 }
 
-func (l *comb) getType() componentType {
+func (c *comb) getType() componentType {
 	return "combat"
 }
 
-func (l *comb) Attack(other *actor) {
+func (c *comb) attack(other *actor) {
 	otherC := *other.getComponent(Combat)
-	c := *l.refActor.getComponent(Combat)
+	cmb := *c.refActor.getComponent(Combat)
 	if otherC == nil || c == nil {
 		return
 	}
 	otherCombat := otherC.(*comb)
-	combat := c.(*comb)
+	combat := cmb.(*comb)
 	otherCombat.hp -= combat.dmg
 }

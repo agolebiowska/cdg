@@ -115,9 +115,9 @@ func (a *actor) moveTo(vec pixel.Vec) {
 	if p == nil {
 		return
 	}
-	phys := p.(*phys)
+	phs := p.(*phys)
 
-	phys.rect = phys.rect.Moved(vec)
+	phs.rect = phs.rect.Moved(vec)
 }
 
 func (a *actor) getPos() pixel.Vec {
@@ -125,9 +125,9 @@ func (a *actor) getPos() pixel.Vec {
 	if p == nil {
 		return pixel.V(0, 0)
 	}
-	phys := p.(*phys)
+	phs := p.(*phys)
 
-	return phys.rect.Center()
+	return phs.rect.Center()
 }
 
 func (a *actor) destroy() {

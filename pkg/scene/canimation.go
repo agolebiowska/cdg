@@ -93,6 +93,8 @@ func (a *anim) update() {
 	}
 }
 
+func (a *anim) draw() {}
+
 func (a *anim) getType() componentType {
 	return "animation"
 }

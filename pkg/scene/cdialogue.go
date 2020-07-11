@@ -18,6 +18,8 @@ func newDialogue(s []string) *dial {
 func (d *dial) update() {
 }
 
+func (d *dial) draw() {}
+
 func (d *dial) setRef(ref *actor) {
 	d.refActor = ref
 }
@@ -26,7 +28,7 @@ func (d *dial) getType() componentType {
 	return "dialogue"
 }
 
-func (d *dial) Talk(other *actor) {
+func (d *dial) talk(other *actor) {
 	//otherD := *other.getComponent(Dialogue)
 	//if otherD == nil {
 	//	return

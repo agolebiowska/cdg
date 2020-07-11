@@ -74,7 +74,7 @@ func (p *phys) update() {
 					return
 				}
 				dial := d.(*dial)
-				dial.Talk(a)
+				dial.talk(a)
 			}
 		}
 
@@ -85,7 +85,7 @@ func (p *phys) update() {
 					return
 				}
 				comb := c.(*comb)
-				comb.Attack(a)
+				comb.attack(a)
 			}
 		}
 
@@ -96,6 +96,8 @@ func (p *phys) update() {
 
 	p.rect = m
 }
+
+func (p *phys) draw() {}
 
 func (p *phys) setRef(ref *actor) {
 	p.refActor = ref
