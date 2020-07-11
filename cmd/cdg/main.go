@@ -39,19 +39,6 @@ func handleInput() {
 	if Global.Win.JustPressed(pixelgl.KeyEscape) {
 		Global.Win.SetClosed(true)
 	}
-	// control the actor with keys
-	if Global.Win.Pressed(pixelgl.KeyA) {
-		Global.Ctrl.X--
-	}
-	if Global.Win.Pressed(pixelgl.KeyD) {
-		Global.Ctrl.X++
-	}
-	if Global.Win.Pressed(pixelgl.KeyW) {
-		Global.Ctrl.Y++
-	}
-	if Global.Win.Pressed(pixelgl.KeyS) {
-		Global.Ctrl.Y--
-	}
 }
 
 func run() {

@@ -4,6 +4,7 @@ import (
 	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"log"
 )
 
 type Phys struct {
@@ -29,6 +30,20 @@ func (p *Phys) Update() {
 		return
 	}
 
+	// control the player actor with keys
+	if Global.Win.Pressed(pixelgl.KeyA) {
+		Global.Ctrl.X--
+	}
+	if Global.Win.Pressed(pixelgl.KeyD) {
+		Global.Ctrl.X++
+	}
+	if Global.Win.Pressed(pixelgl.KeyW) {
+		Global.Ctrl.Y++
+	}
+	if Global.Win.Pressed(pixelgl.KeyS) {
+		Global.Ctrl.Y--
+	}
+
 	// apply controls
 	switch {
 	case Global.Ctrl.X < 0:
@@ -46,6 +61,9 @@ func (p *Phys) Update() {
 
 	m := p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
 
+	talkingRange := p.Rect.Resized(p.Rect.Center(), pixel.V(m.W()+10, m.H()+10))
+	combatRange := p.Rect.Resized(p.Rect.Center(), pixel.V(m.W()+10, m.H()+10))
+
 	for _, a := range p.refActor.refScene.Actors {
 		ph := *a.GetComponent(Physics)
 		if ph == nil {
@@ -53,29 +71,27 @@ func (p *Phys) Update() {
 		}
 		phys := ph.(*Phys)
 
-		if phys.collide(m) {
-			if a.Tag == Solid {
-				return
+		if phys.Rect.Intersects(talkingRange) && a.Tag == NPC {
+			if Global.Win.JustPressed(pixelgl.KeyE) {
+				log.Println("TALKING")
 			}
-			if a.Tag == Enemy {
-				if Global.Win.JustPressed(pixelgl.KeyH) {
-					c := *p.refActor.GetComponent(Combat)
-					if c == nil {
-						return
-					}
-					comb := c.(*Comb)
-					comb.Attack(a)
+		}
+		if phys.Rect.Intersects(combatRange) && a.Tag == Enemy {
+			if Global.Win.JustPressed(pixelgl.MouseButtonLeft) {
+				c := *p.refActor.GetComponent(Combat)
+				if c == nil {
+					return
 				}
-				return
+				comb := c.(*Comb)
+				comb.Attack(a)
 			}
+		}
+		if phys.Rect.Intersects(m) && (a.Tag == Solid || a.Tag == Enemy || a.Tag == NPC) {
+			return
 		}
 	}
 
 	p.Rect = m
-}
-
-func (p *Phys) collide(other pixel.Rect) bool {
-	return p.Rect.Intersect(other) != pixel.R(0, 0, 0, 0)
 }
 
 func (p *Phys) SetRef(ref *Actor) {

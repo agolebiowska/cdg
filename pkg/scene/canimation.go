@@ -2,7 +2,7 @@ package scene
 
 import (
 	"github.com/agolebiowska/cdg/pkg/files"
-	"github.com/agolebiowska/cdg/pkg/globals"
+	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
 	"math"
 )
@@ -31,9 +31,9 @@ type Anim struct {
 
 func NewAnim(from string) *Anim {
 	sheet, anims, err := files.LoadAnimationSheet(
-		globals.Global.Assets+from+".png",
-		globals.Global.Assets+from+".csv",
-		globals.Global.TileSize,
+		Global.Assets+from+".png",
+		Global.Assets+from+".csv",
+		Global.TileSize,
 	)
 	if err != nil {
 		panic(err)
@@ -52,14 +52,13 @@ func (a *Anim) SetRef(ref *Actor) {
 }
 
 func (a *Anim) Update() {
-	var phys *Phys
-	for _, c := range a.refActor.Components {
-		if c.GetType() == Physics {
-			phys = c.(*Phys)
-		}
+	p := *a.refActor.GetComponent(Physics)
+	if p == nil {
+		return
 	}
+	phys := p.(*Phys)
 
-	a.counter += globals.Global.DeltaTime
+	a.counter += Global.DeltaTime
 
 	// determine the new animation state
 	var newState animState

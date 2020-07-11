@@ -60,6 +60,13 @@ func New(from string) *Scene {
 				scene.Add(a)
 			}
 
+			if objectGroups.Name == "npc" {
+				a := NewActor(center.X+o.X, center.Y+o.Y, 16, 16)
+				a.AddComponent(NewAnim("npc"))
+				a.SetTag(NPC)
+				scene.Add(a)
+			}
+
 			if objectGroups.Name == "solid" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
 				a.SetTag(Solid)
