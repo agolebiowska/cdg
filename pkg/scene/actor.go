@@ -4,8 +4,17 @@ import (
 	"github.com/faiface/pixel"
 )
 
+type actorType string
+
+var (
+	Player actorType = "player"
+	Enemy  actorType = "enemy"
+	NPC    actorType = "npc"
+	Solid  actorType = "solid"
+)
+
 type Actor struct {
-	Tag        string
+	Tag        actorType
 	IsPlayer   bool
 	Components []Component
 
@@ -14,13 +23,14 @@ type Actor struct {
 
 func NewPlayer() *Actor {
 	actor := &Actor{
-		Tag:        "player",
+		Tag:        Player,
 		IsPlayer:   true,
 		Components: []Component{},
 	}
 
 	actor.AddComponent(NewPhysics(10, 15))
 	actor.AddComponent(NewAnim("player"))
+	actor.AddComponent(NewCombat(100, 10))
 
 	return actor
 }
@@ -36,7 +46,7 @@ func NewActor(x, y, w, h float64) *Actor {
 	return actor
 }
 
-func (a *Actor) SetTag(tag string) {
+func (a *Actor) SetTag(tag actorType) {
 	a.Tag = tag
 }
 
@@ -79,7 +89,6 @@ func (a *Actor) Draw() {
 			//phys.Rect.W()/anim.Sprite.Frame().W(),
 			//phys.Rect.H()/anim.Sprite.Frame().H(),
 		)).
-		//ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)),
 		ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)).Moved(phys.Rect.Center()),
 	)
 }
@@ -111,4 +120,25 @@ func (a *Actor) GetComponent(t componentType) *Component {
 		}
 	}
 	return nil
+}
+
+func (a *Actor) Attack(other *Actor) {
+	otherC := *other.GetComponent(Combat)
+	c := *a.GetComponent(Combat)
+	if otherC == nil || c == nil {
+		return
+	}
+	otherCombat := otherC.(*Comb)
+	combat := c.(*Comb)
+
+	otherCombat.HP -= combat.Dmg
+}
+
+func (a *Actor) Destroy() {
+	a.Components = []Component{}
+	for i, ac := range a.refScene.Actors {
+		if len(ac.Components) <= 0 {
+			a.refScene.Actors = append(a.refScene.Actors[:i], a.refScene.Actors[i+1:]...)
+		}
+	}
 }

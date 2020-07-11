@@ -5,6 +5,7 @@ type componentType string
 var (
 	Physics   componentType = "physics"
 	Animation componentType = "animation"
+	Combat    componentType = "combat"
 )
 
 type Component interface {

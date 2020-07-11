@@ -22,7 +22,6 @@ type GlobalVars struct {
 	Assets         string
 	TileSize       float64
 	Ctrl           pixel.Vec
-	CamPos         pixel.Vec
 	State          *State
 	Debug          bool
 }
@@ -39,6 +38,5 @@ var Global = &GlobalVars{
 	Assets:      "../../assets/",
 	TileSize:    32,
 	Ctrl:        pixel.ZV,
-	CamPos:      pixel.ZV,
 	Debug:       false,
 }

@@ -51,10 +51,19 @@ func New(from string) *Scene {
 			if o.Name == "player" {
 				player.MoveTo(pixel.V(center.X+o.X, center.Y+o.Y))
 			}
+
+			if objectGroups.Name == "enemy" {
+				a := NewActor(center.X+o.X, center.Y+o.Y, 10, 15)
+				a.AddComponent(NewAnim("enemy"))
+				a.AddComponent(NewCombat(100, 10))
+				a.SetTag(Enemy)
+				scene.Add(a)
+			}
+
 			if objectGroups.Name == "solid" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
-				a.SetTag("solid")
-				scene.Actors = append(scene.Actors, a)
+				a.SetTag(Solid)
+				scene.Add(a)
 			}
 		}
 	}
@@ -86,16 +95,18 @@ func (s *Scene) Draw() {
 	if Global.Debug {
 		for _, actor := range s.Actors {
 			p := *actor.GetComponent(Physics)
-			phys := p.(*Phys)
-			imd := imdraw.New(nil)
-			imd.Color = color.White
-			imd.Push(
-				phys.Rect.Norm().Vertices()[0],
-				phys.Rect.Norm().Vertices()[1],
-				phys.Rect.Norm().Vertices()[2],
-				phys.Rect.Norm().Vertices()[3])
-			imd.Polygon(1)
-			imd.Draw(s.Canvas)
+			if p != nil {
+				phys := p.(*Phys)
+				imd := imdraw.New(nil)
+				imd.Color = color.White
+				imd.Push(
+					phys.Rect.Norm().Vertices()[0],
+					phys.Rect.Norm().Vertices()[1],
+					phys.Rect.Norm().Vertices()[2],
+					phys.Rect.Norm().Vertices()[3])
+				imd.Polygon(1)
+				imd.Draw(s.Canvas)
+			}
 		}
 	}
 

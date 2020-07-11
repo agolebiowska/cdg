@@ -1,8 +1,9 @@
 package scene
 
 import (
-	"github.com/agolebiowska/cdg/pkg/globals"
+	. "github.com/agolebiowska/cdg/pkg/globals"
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
 )
 
 type Phys struct {
@@ -10,6 +11,8 @@ type Phys struct {
 	Rect  pixel.Rect
 
 	vel pixel.Vec
+
+	attack bool
 
 	refActor *Actor
 }
@@ -28,35 +31,46 @@ func (p *Phys) Update() {
 
 	// apply controls
 	switch {
-	case globals.Global.Ctrl.X < 0:
+	case Global.Ctrl.X < 0:
 		p.vel.X = -p.Speed
-	case globals.Global.Ctrl.X > 0:
+	case Global.Ctrl.X > 0:
 		p.vel.X = +p.Speed
-	case globals.Global.Ctrl.Y < 0:
+	case Global.Ctrl.Y < 0:
 		p.vel.Y = -p.Speed
-	case globals.Global.Ctrl.Y > 0:
+	case Global.Ctrl.Y > 0:
 		p.vel.Y = +p.Speed
 	default:
 		p.vel.X = 0
 		p.vel.Y = 0
 	}
 
-	m := p.Rect.Moved(p.vel.Scaled(globals.Global.DeltaTime))
+	m := p.Rect.Moved(p.vel.Scaled(Global.DeltaTime))
 
 	for _, a := range p.refActor.refScene.Actors {
-		if a.Tag == "solid" {
-			p := *a.GetComponent(Physics)
-			if p == nil {
-				continue
+		ph := *a.GetComponent(Physics)
+		if ph == nil {
+			continue
+		}
+		phys := ph.(*Phys)
+
+		if phys.collide(m) {
+			if a.Tag == Solid {
+				return
 			}
-			phys := p.(*Phys)
-			if phys.Rect.Intersect(m) != pixel.R(0, 0, 0, 0) {
+			if a.Tag == Enemy {
+				if Global.Win.JustPressed(pixelgl.KeyH) {
+					p.refActor.Attack(a)
+				}
 				return
 			}
 		}
 	}
 
 	p.Rect = m
+}
+
+func (p *Phys) collide(other pixel.Rect) bool {
+	return p.Rect.Intersect(other) != pixel.R(0, 0, 0, 0)
 }
 
 func (p *Phys) SetRef(ref *Actor) {
