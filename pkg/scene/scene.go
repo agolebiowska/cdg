@@ -34,14 +34,12 @@ func New(from string) *Scene {
 		Canvas:  c,
 		Tilemap: m,
 		Actors:  []*Actor{},
-		Camera:  &Camera{},
+		Camera:  NewCamera(),
 	}
 
 	player := NewPlayer()
 	scene.Add(player)
-
-	//scene.Camera.New()
-	//scene.Camera.SetFollow(player)
+	scene.Camera.SetFollow(player)
 
 	// center objects same as the tilemap is centered
 	center := pixel.V(-float64((scene.Tilemap.Width*scene.Tilemap.TileWidth)/2),
@@ -55,7 +53,6 @@ func New(from string) *Scene {
 			}
 			if objectGroups.Name == "solid" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
-
 				a.SetTag("solid")
 				scene.Actors = append(scene.Actors, a)
 			}
@@ -65,28 +62,29 @@ func New(from string) *Scene {
 	return scene
 }
 
-func (m *Scene) Add(a *Actor) {
-	a.refScene = m
-	m.Actors = append(m.Actors, a)
+func (s *Scene) Add(a *Actor) {
+	a.refScene = s
+	s.Actors = append(s.Actors, a)
 }
 
-func (m *Scene) Draw() {
-	m.Canvas.Clear(colornames.Black)
+func (s *Scene) Draw() {
+	s.Canvas.Clear(colornames.Black)
 
-	center := pixel.V(-float64((m.Tilemap.Width*m.Tilemap.TileWidth)/2),
-		-float64((m.Tilemap.Height*m.Tilemap.TileHeight)/2))
-	m.Tilemap.DrawAll(m.Canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
-		Global.Win.Bounds().W()/m.Canvas.Bounds().W(),
-		Global.Win.Bounds().H()/m.Canvas.Bounds().H()),
+	center := pixel.V(-float64((s.Tilemap.Width*s.Tilemap.TileWidth)/2),
+		-float64((s.Tilemap.Height*s.Tilemap.TileHeight)/2))
+
+	s.Tilemap.DrawAll(s.Canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
+		Global.Win.Bounds().W()/s.Canvas.Bounds().W(),
+		Global.Win.Bounds().H()/s.Canvas.Bounds().H()),
 	).Moved(center))
 
-	for _, actor := range m.Actors {
+	for _, actor := range s.Actors {
 		actor.Draw()
 	}
 
 	// DEBUG COLLIDERS
 	if Global.Debug {
-		for _, actor := range m.Actors {
+		for _, actor := range s.Actors {
 			p := *actor.GetComponent(Physics)
 			phys := p.(*Phys)
 			imd := imdraw.New(nil)
@@ -97,40 +95,24 @@ func (m *Scene) Draw() {
 				phys.Rect.Norm().Vertices()[2],
 				phys.Rect.Norm().Vertices()[3])
 			imd.Polygon(1)
-			imd.Draw(m.Canvas)
+			imd.Draw(s.Canvas)
 		}
 	}
 
 	// stretch the canvas to the window
 	Global.Win.SetMatrix(pixel.IM.Scaled(pixel.ZV,
 		math.Min(
-			Global.Win.Bounds().W()/m.Canvas.Bounds().W(),
-			Global.Win.Bounds().H()/m.Canvas.Bounds().H(),
+			Global.Win.Bounds().W()/s.Canvas.Bounds().W(),
+			Global.Win.Bounds().H()/s.Canvas.Bounds().H(),
 		),
 	).Moved(Global.Win.Bounds().Center()))
-	m.Canvas.Draw(Global.Win, pixel.IM.Moved(m.Canvas.Bounds().Center()))
+	s.Canvas.Draw(Global.Win, pixel.IM.Moved(s.Canvas.Bounds().Center()))
 }
 
-func (m *Scene) Update() {
-	var player *Actor
-	for _, actor := range m.Actors {
-		if actor.IsPlayer {
-			player = actor
-		}
-	}
-	if player == nil {
-		return
-	}
+func (s *Scene) Update() {
+	s.Camera.Update()
 
-	//m.Camera.Update()
-
-	// lerp the camera position towards the player
-	//pos := pixel.ZV
-	//pos = pixel.Lerp(pos, player.GetPos(), 1-math.Pow(1.0/128, Global.DeltaTime))
-	//cam := pixel.IM.Moved(pos.Scaled(-1))
-	//m.Canvas.SetMatrix(cam)
-
-	for _, actor := range m.Actors {
+	for _, actor := range s.Actors {
 		actor.Update()
 	}
 }
