@@ -24,3 +24,15 @@ func (l *Comb) SetRef(ref *Actor) {
 func (l *Comb) GetType() componentType {
 	return "combat"
 }
+
+func (l *Comb) Attack(other *Actor) {
+	otherC := *other.GetComponent(Combat)
+	c := *l.refActor.GetComponent(Combat)
+	if otherC == nil || c == nil {
+		return
+	}
+	otherCombat := otherC.(*Comb)
+	combat := c.(*Comb)
+
+	otherCombat.HP -= combat.Dmg
+}

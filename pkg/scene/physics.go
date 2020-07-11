@@ -59,7 +59,12 @@ func (p *Phys) Update() {
 			}
 			if a.Tag == Enemy {
 				if Global.Win.JustPressed(pixelgl.KeyH) {
-					p.refActor.Attack(a)
+					c := *p.refActor.GetComponent(Combat)
+					if c == nil {
+						return
+					}
+					comb := c.(*Comb)
+					comb.Attack(a)
 				}
 				return
 			}

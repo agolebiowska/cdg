@@ -122,18 +122,6 @@ func (a *Actor) GetComponent(t componentType) *Component {
 	return nil
 }
 
-func (a *Actor) Attack(other *Actor) {
-	otherC := *other.GetComponent(Combat)
-	c := *a.GetComponent(Combat)
-	if otherC == nil || c == nil {
-		return
-	}
-	otherCombat := otherC.(*Comb)
-	combat := c.(*Comb)
-
-	otherCombat.HP -= combat.Dmg
-}
-
 func (a *Actor) Destroy() {
 	a.Components = []Component{}
 	for i, ac := range a.refScene.Actors {
