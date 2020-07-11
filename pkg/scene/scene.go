@@ -19,7 +19,7 @@ type Scene struct {
 }
 
 func New(from string) *Scene {
-	m, err := tilepix.ReadFile(Global.Assets + from + ".tmx")
+	m, err := tilepix.ReadFile(Global.Maps + from + ".tmx")
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +41,7 @@ func New(from string) *Scene {
 	scene.Add(player)
 	scene.Camera.SetFollow(player)
 
-	// center objects same as the tilemap is centered
-	center := pixel.V(-float64((scene.Tilemap.Width*scene.Tilemap.TileWidth)/2),
-		-float64((scene.Tilemap.Height*scene.Tilemap.TileHeight)/2))
+	center := scene.getMapCenter()
 
 	// player starting position can be added in tiled as "point"
 	for _, objectGroups := range scene.Tilemap.ObjectGroups {
@@ -52,17 +50,17 @@ func New(from string) *Scene {
 				player.MoveTo(pixel.V(center.X+o.X, center.Y+o.Y))
 			}
 
-			if objectGroups.Name == "enemy" {
+			if o.Type == "enemy" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, 10, 15)
-				a.AddComponent(NewAnim("enemy"))
+				a.AddComponent(NewAnim(o.Name))
 				a.AddComponent(NewCombat(100, 10))
 				a.SetTag(Enemy)
 				scene.Add(a)
 			}
 
-			if objectGroups.Name == "npc" {
+			if o.Type == "npc" {
 				a := NewActor(center.X+o.X, center.Y+o.Y, 16, 16)
-				a.AddComponent(NewAnim("npc"))
+				a.AddComponent(NewAnim(o.Name))
 				a.AddComponent(NewDialogue([]string{"HI", "WHATS UP?", "SURE", "C MON"}))
 				a.SetTag(NPC)
 				scene.Add(a)
@@ -87,13 +85,10 @@ func (s *Scene) Add(a *Actor) {
 func (s *Scene) Draw() {
 	s.Canvas.Clear(colornames.Black)
 
-	center := pixel.V(-float64((s.Tilemap.Width*s.Tilemap.TileWidth)/2),
-		-float64((s.Tilemap.Height*s.Tilemap.TileHeight)/2))
-
 	s.Tilemap.DrawAll(s.Canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
 		Global.Win.Bounds().W()/s.Canvas.Bounds().W(),
 		Global.Win.Bounds().H()/s.Canvas.Bounds().H()),
-	).Moved(center))
+	).Moved(s.getMapCenter()))
 
 	for _, actor := range s.Actors {
 		actor.Draw()
@@ -130,7 +125,6 @@ func (s *Scene) Draw() {
 
 func (s *Scene) Update() {
 	s.Camera.Update()
-
 	for _, actor := range s.Actors {
 		actor.Update()
 	}
@@ -143,4 +137,11 @@ func (s *Scene) GetPlayer() *Actor {
 		}
 	}
 	return nil
+}
+
+// get tilemap center
+func (s *Scene) getMapCenter() pixel.Vec {
+	return pixel.V(
+		-float64((s.Tilemap.Width*s.Tilemap.TileWidth)/2),
+		-float64((s.Tilemap.Height*s.Tilemap.TileHeight)/2))
 }

@@ -20,6 +20,8 @@ type GlobalVars struct {
 	Title          string
 	DeltaTime      float64
 	Assets         string
+	Maps           string
+	Actors         string
 	TileSize       float64
 	Ctrl           pixel.Vec
 	State          *State
@@ -36,6 +38,8 @@ var Global = &GlobalVars{
 	Win:         &pixelgl.Window{},
 	Title:       "Companion driven Game",
 	Assets:      "../../assets/",
+	Maps:        "../../assets/maps/",
+	Actors:      "../../assets/actors/",
 	TileSize:    32,
 	Ctrl:        pixel.ZV,
 	Debug:       false,

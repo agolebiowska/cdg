@@ -31,8 +31,8 @@ type Anim struct {
 
 func NewAnim(from string) *Anim {
 	sheet, anims, err := files.LoadAnimationSheet(
-		Global.Assets+from+".png",
-		Global.Assets+from+".csv",
+		Global.Actors+from+".png",
+		Global.Actors+from+".csv",
 		Global.TileSize,
 	)
 	if err != nil {
