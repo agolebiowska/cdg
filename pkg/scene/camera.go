@@ -6,38 +6,38 @@ import (
 	"math"
 )
 
-type Camera struct {
-	Pos    pixel.Vec
-	Follow *Actor
-	Cam    pixel.Matrix
-	Zoom   float64
+type camera struct {
+	pos    pixel.Vec
+	follow *actor
+	cam    pixel.Matrix
+	zoom   float64
 }
 
-func NewCamera() *Camera {
-	return &Camera{
-		Pos:  pixel.ZV,
-		Cam:  pixel.Matrix{},
-		Zoom: 1,
+func newCamera() *camera {
+	return &camera{
+		pos:  pixel.ZV,
+		cam:  pixel.Matrix{},
+		zoom: 1,
 	}
 }
 
-func (c *Camera) SetPosition(x, y float64) {
-	c.Pos = pixel.Vec{X: x, Y: y}
+func (c *camera) SetPosition(x, y float64) {
+	c.pos = pixel.Vec{X: x, Y: y}
 }
 
-func (c *Camera) SetFollow(a *Actor) {
-	c.Follow = a
+func (c *camera) setFollow(a *actor) {
+	c.follow = a
 }
 
-func (c *Camera) Update() {
-	pos := c.Pos
-	if c.Follow != nil {
-		pos = c.Follow.GetPos()
+func (c *camera) update() {
+	pos := c.pos
+	if c.follow != nil {
+		pos = c.follow.getPos()
 	}
 
-	pos = pixel.Lerp(c.Pos, pos, 1-math.Pow(1.0/128, Global.DeltaTime))
-	c.Cam = pixel.IM.Moved(pos.Scaled(-1 / c.Zoom))
-	c.Cam = c.Cam.Scaled(pos, c.Zoom)
-	c.Follow.refScene.Canvas.SetMatrix(c.Cam)
-	c.Pos = pos
+	pos = pixel.Lerp(c.pos, pos, 1-math.Pow(1.0/128, Global.DeltaTime))
+	c.cam = pixel.IM.Moved(pos.Scaled(-1 / c.zoom))
+	c.cam = c.cam.Scaled(pos, c.zoom)
+	c.follow.refScene.canvas.SetMatrix(c.cam)
+	c.pos = pos
 }

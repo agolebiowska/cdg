@@ -1,38 +1,36 @@
 package scene
 
-type Comb struct {
-	HP  float64
-	Dmg float64
-
-	refActor *Actor
+type comb struct {
+	hp       float64
+	dmg      float64
+	refActor *actor
 }
 
-func NewCombat(HP, Dmg float64) *Comb {
-	return &Comb{HP: HP, Dmg: Dmg}
+func newCombat(hp, dmg float64) *comb {
+	return &comb{hp: hp, dmg: dmg}
 }
 
-func (l *Comb) Update() {
-	if l.HP <= 0 {
-		l.refActor.Destroy()
+func (l *comb) update() {
+	if l.hp <= 0 {
+		l.refActor.destroy()
 	}
 }
 
-func (l *Comb) SetRef(ref *Actor) {
+func (l *comb) setRef(ref *actor) {
 	l.refActor = ref
 }
 
-func (l *Comb) GetType() componentType {
+func (l *comb) getType() componentType {
 	return "combat"
 }
 
-func (l *Comb) Attack(other *Actor) {
-	otherC := *other.GetComponent(Combat)
-	c := *l.refActor.GetComponent(Combat)
+func (l *comb) Attack(other *actor) {
+	otherC := *other.getComponent(Combat)
+	c := *l.refActor.getComponent(Combat)
 	if otherC == nil || c == nil {
 		return
 	}
-	otherCombat := otherC.(*Comb)
-	combat := c.(*Comb)
-
-	otherCombat.HP -= combat.Dmg
+	otherCombat := otherC.(*comb)
+	combat := c.(*comb)
+	otherCombat.hp -= combat.dmg
 }

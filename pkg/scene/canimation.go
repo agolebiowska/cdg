@@ -14,22 +14,19 @@ const (
 	running animState = iota
 )
 
-type Anim struct {
-	Sheet pixel.Picture
-	Anims map[string][]pixel.Rect
-	Rate  float64
-
-	state   animState
-	counter float64
-	Dir     float64
-
-	Frame  pixel.Rect
-	Sprite *pixel.Sprite
-
-	refActor *Actor
+type anim struct {
+	sheet    pixel.Picture
+	anims    map[string][]pixel.Rect
+	rate     float64
+	state    animState
+	counter  float64
+	dir      float64
+	frame    pixel.Rect
+	sprite   *pixel.Sprite
+	refActor *actor
 }
 
-func NewAnim(from string) *Anim {
+func newAnim(from string) *anim {
 	sheet, anims, err := files.LoadAnimationSheet(
 		Global.Actors+from+".png",
 		Global.Actors+from+".csv",
@@ -39,24 +36,24 @@ func NewAnim(from string) *Anim {
 		panic(err)
 	}
 
-	return &Anim{
-		Sheet: sheet,
-		Anims: anims,
-		Rate:  1.0 / 10,
-		Dir:   +1,
+	return &anim{
+		sheet: sheet,
+		anims: anims,
+		rate:  1.0 / 10,
+		dir:   +1,
 	}
 }
 
-func (a *Anim) SetRef(ref *Actor) {
+func (a *anim) setRef(ref *actor) {
 	a.refActor = ref
 }
 
-func (a *Anim) Update() {
-	p := *a.refActor.GetComponent(Physics)
+func (a *anim) update() {
+	p := *a.refActor.getComponent(Physics)
 	if p == nil {
 		return
 	}
-	phys := p.(*Phys)
+	phys := p.(*phys)
 
 	a.counter += Global.DeltaTime
 
@@ -78,24 +75,24 @@ func (a *Anim) Update() {
 	// determine the correct animation frame
 	switch a.state {
 	case idle:
-		//a.frame = a.Anims["Front"][0]
-		i := int(math.Floor(a.counter / a.Rate))
-		a.Frame = a.Anims["Front"][i%len(a.Anims["Front"])]
+		//a.frame = a.anims["Front"][0]
+		i := int(math.Floor(a.counter / a.rate))
+		a.frame = a.anims["Front"][i%len(a.anims["Front"])]
 	case running:
-		i := int(math.Floor(a.counter / a.Rate))
-		a.Frame = a.Anims["Run"][i%len(a.Anims["Run"])]
+		i := int(math.Floor(a.counter / a.rate))
+		a.frame = a.anims["Run"][i%len(a.anims["Run"])]
 	}
 
 	// set the facing direction of the actor
 	if phys.vel.X != 0 {
 		if phys.vel.X > 0 {
-			a.Dir = +1
+			a.dir = +1
 		} else {
-			a.Dir = -1
+			a.dir = -1
 		}
 	}
 }
 
-func (a *Anim) GetType() componentType {
+func (a *anim) getType() componentType {
 	return "animation"
 }

@@ -2,41 +2,39 @@ package scene
 
 import "log"
 
-type Dial struct {
-	Sentences []string
+type dial struct {
+	sentences []string
 	counter   int
-
-	refActor *Actor
+	refActor  *actor
 }
 
-func NewDialogue(s []string) *Dial {
-	return &Dial{
-		Sentences: s,
+func newDialogue(s []string) *dial {
+	return &dial{
+		sentences: s,
 		counter:   0,
 	}
 }
 
-func (d *Dial) Update() {
-
+func (d *dial) update() {
 }
 
-func (d *Dial) SetRef(ref *Actor) {
+func (d *dial) setRef(ref *actor) {
 	d.refActor = ref
 }
 
-func (d *Dial) GetType() componentType {
+func (d *dial) getType() componentType {
 	return "dialogue"
 }
 
-func (d *Dial) Talk(other *Actor) {
-	//otherD := *other.GetComponent(Dialogue)
+func (d *dial) Talk(other *actor) {
+	//otherD := *other.getComponent(Dialogue)
 	//if otherD == nil {
 	//	return
 	//}
 	//otherDial := otherD.(*Comb)
-	if len(d.Sentences) <= d.counter {
+	if len(d.sentences) <= d.counter {
 		d.counter = 0
 	}
-	log.Println(d.Sentences[d.counter])
+	log.Println(d.sentences[d.counter])
 	d.counter++
 }

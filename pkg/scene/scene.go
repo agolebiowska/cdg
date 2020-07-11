@@ -11,14 +11,14 @@ import (
 	"math"
 )
 
-type Scene struct {
-	Canvas  *pixelgl.Canvas
-	Tilemap *tilepix.Map
-	Actors  []*Actor
-	Camera  *Camera
+type scene struct {
+	canvas  *pixelgl.Canvas
+	tilemap *tilepix.Map
+	actors  []*actor
+	camera  *camera
 }
 
-func New(from string) *Scene {
+func New(from string) *scene {
 	m, err := tilepix.ReadFile(Global.Maps + from + ".tmx")
 	if err != nil {
 		panic(err)
@@ -30,46 +30,44 @@ func New(from string) *Scene {
 		Global.WindowWidth/4,
 		Global.WindowHeight/4))
 
-	scene := &Scene{
-		Canvas:  c,
-		Tilemap: m,
-		Actors:  []*Actor{},
-		Camera:  NewCamera(),
+	scene := &scene{
+		canvas:  c,
+		tilemap: m,
+		actors:  []*actor{},
+		camera:  newCamera(),
 	}
 
-	player := NewPlayer()
-	scene.Add(player)
-	scene.Camera.SetFollow(player)
+	player := newPlayer()
+	scene.add(player)
+	scene.camera.setFollow(player)
 
 	center := scene.getMapCenter()
 
-	// player starting position can be added in tiled as "point"
-	for _, objectGroups := range scene.Tilemap.ObjectGroups {
+	for _, objectGroups := range scene.tilemap.ObjectGroups {
 		for _, o := range objectGroups.Objects {
-			if o.Name == "player" {
-				player.MoveTo(pixel.V(center.X+o.X, center.Y+o.Y))
-			}
+			switch o.Type {
+			case "player":
+				player.moveTo(pixel.V(center.X+o.X, center.Y+o.Y))
 
-			if o.Type == "enemy" {
-				a := NewActor(center.X+o.X, center.Y+o.Y, 10, 15)
-				a.AddComponent(NewAnim(o.Name))
-				a.AddComponent(NewCombat(100, 10))
-				a.SetTag(Enemy)
-				scene.Add(a)
-			}
+			case "enemy":
+				a := newActor(center.X+o.X, center.Y+o.Y, 10, 15)
+				a.addComponent(newAnim(o.Name))
+				a.addComponent(newCombat(100, 10))
+				a.setTag(Enemy)
+				scene.add(a)
 
-			if o.Type == "npc" {
-				a := NewActor(center.X+o.X, center.Y+o.Y, 16, 16)
-				a.AddComponent(NewAnim(o.Name))
-				a.AddComponent(NewDialogue([]string{"HI", "WHATS UP?", "SURE", "C MON"}))
-				a.SetTag(NPC)
-				scene.Add(a)
+			case "npc":
+				a := newActor(center.X+o.X, center.Y+o.Y, 16, 16)
+				a.addComponent(newAnim(o.Name))
+				a.addComponent(newDialogue([]string{"HI", "WHATS UP?", "SURE", "C MON"}))
+				a.setTag(NPC)
+				scene.add(a)
 			}
 
 			if objectGroups.Name == "solid" {
-				a := NewActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
-				a.SetTag(Solid)
-				scene.Add(a)
+				a := newActor(center.X+o.X, center.Y+o.Y, o.Width, o.Height)
+				a.setTag(Solid)
+				scene.add(a)
 			}
 		}
 	}
@@ -77,38 +75,33 @@ func New(from string) *Scene {
 	return scene
 }
 
-func (s *Scene) Add(a *Actor) {
-	a.refScene = s
-	s.Actors = append(s.Actors, a)
-}
+func (s *scene) Draw() {
+	s.canvas.Clear(colornames.Black)
 
-func (s *Scene) Draw() {
-	s.Canvas.Clear(colornames.Black)
-
-	s.Tilemap.DrawAll(s.Canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
-		Global.Win.Bounds().W()/s.Canvas.Bounds().W(),
-		Global.Win.Bounds().H()/s.Canvas.Bounds().H()),
+	s.tilemap.DrawAll(s.canvas, color.Transparent, pixel.IM.Scaled(pixel.ZV, math.Min(
+		Global.Win.Bounds().W()/s.canvas.Bounds().W(),
+		Global.Win.Bounds().H()/s.canvas.Bounds().H()),
 	).Moved(s.getMapCenter()))
 
-	for _, actor := range s.Actors {
-		actor.Draw()
+	for _, actor := range s.actors {
+		actor.draw()
 	}
 
 	// DEBUG COLLIDERS
 	if Global.Debug {
-		for _, actor := range s.Actors {
-			p := *actor.GetComponent(Physics)
+		for _, actor := range s.actors {
+			p := *actor.getComponent(Physics)
 			if p != nil {
-				phys := p.(*Phys)
+				phys := p.(*phys)
 				imd := imdraw.New(nil)
 				imd.Color = color.White
 				imd.Push(
-					phys.Rect.Norm().Vertices()[0],
-					phys.Rect.Norm().Vertices()[1],
-					phys.Rect.Norm().Vertices()[2],
-					phys.Rect.Norm().Vertices()[3])
+					phys.rect.Norm().Vertices()[0],
+					phys.rect.Norm().Vertices()[1],
+					phys.rect.Norm().Vertices()[2],
+					phys.rect.Norm().Vertices()[3])
 				imd.Polygon(1)
-				imd.Draw(s.Canvas)
+				imd.Draw(s.canvas)
 			}
 		}
 	}
@@ -116,32 +109,37 @@ func (s *Scene) Draw() {
 	// stretch the canvas to the window
 	Global.Win.SetMatrix(pixel.IM.Scaled(pixel.ZV,
 		math.Min(
-			Global.Win.Bounds().W()/s.Canvas.Bounds().W(),
-			Global.Win.Bounds().H()/s.Canvas.Bounds().H(),
+			Global.Win.Bounds().W()/s.canvas.Bounds().W(),
+			Global.Win.Bounds().H()/s.canvas.Bounds().H(),
 		),
 	).Moved(Global.Win.Bounds().Center()))
-	s.Canvas.Draw(Global.Win, pixel.IM.Moved(s.Canvas.Bounds().Center()))
+	s.canvas.Draw(Global.Win, pixel.IM.Moved(s.canvas.Bounds().Center()))
 }
 
-func (s *Scene) Update() {
-	s.Camera.Update()
-	for _, actor := range s.Actors {
-		actor.Update()
+func (s *scene) Update() {
+	s.camera.update()
+	for _, actor := range s.actors {
+		actor.update()
 	}
 }
 
-func (s *Scene) GetPlayer() *Actor {
-	for _, a := range s.Actors {
-		if a.IsPlayer {
+func (s *scene) add(a *actor) {
+	a.refScene = s
+	s.actors = append(s.actors, a)
+}
+
+func (s *scene) getPlayer() *actor {
+	for _, a := range s.actors {
+		if a.isPlayer {
 			return a
 		}
 	}
 	return nil
 }
 
-// get tilemap center
-func (s *Scene) getMapCenter() pixel.Vec {
+// get tilemap center point
+func (s *scene) getMapCenter() pixel.Vec {
 	return pixel.V(
-		-float64((s.Tilemap.Width*s.Tilemap.TileWidth)/2),
-		-float64((s.Tilemap.Height*s.Tilemap.TileHeight)/2))
+		-float64((s.tilemap.Width*s.tilemap.TileWidth)/2),
+		-float64((s.tilemap.Height*s.tilemap.TileHeight)/2))
 }

@@ -166,11 +166,11 @@
 </data>
  </layer>
  <objectgroup id="7" name="solid">
-  <object id="7" x="273.333" y="253.667" width="284.667" height="26.3333"/>
-  <object id="8" x="273.333" y="287.667" width="2.66667" height="178"/>
-  <object id="9" x="556.333" y="288.667" width="2.33333" height="176.667"/>
-  <object id="10" x="273" y="460.333" width="129" height="24.6667"/>
-  <object id="12" x="430" y="461" width="129.333" height="25"/>
+  <object id="7" type="solid" x="273.333" y="253.667" width="284.667" height="26.3333"/>
+  <object id="8" type="solid" x="273.333" y="287.667" width="2.66667" height="178"/>
+  <object id="9" type="solid" x="556.333" y="288.667" width="2.33333" height="176.667"/>
+  <object id="10" type="solid" x="273" y="460.333" width="129" height="24.6667"/>
+  <object id="12" type="solid" x="430" y="461" width="129.333" height="25"/>
   <object id="13" x="306.667" y="310" width="10.3333" height="20.3333"/>
   <object id="14" x="306.667" y="406" width="10.3333" height="22.3333"/>
   <object id="15" x="514" y="406.667" width="11.6667" height="21"/>

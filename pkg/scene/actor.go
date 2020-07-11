@@ -1,7 +1,9 @@
 package scene
 
 import (
+	"fmt"
 	"github.com/faiface/pixel"
+	"reflect"
 )
 
 type actorType string
@@ -13,126 +15,132 @@ var (
 	Solid  actorType = "solid"
 )
 
-type Actor struct {
-	Tag        actorType
-	IsPlayer   bool
-	Components []Component
-
-	refScene *Scene
+type actor struct {
+	tag        actorType
+	isPlayer   bool
+	components []component
+	refScene   *scene
 }
 
-func NewPlayer() *Actor {
-	actor := &Actor{
-		Tag:        Player,
-		IsPlayer:   true,
-		Components: []Component{},
+func newPlayer() *actor {
+	actor := &actor{
+		tag:        Player,
+		isPlayer:   true,
+		components: []component{},
 	}
 
-	actor.AddComponent(NewPhysics(10, 15))
-	actor.AddComponent(NewAnim("player"))
-	actor.AddComponent(NewCombat(100, 10))
+	actor.addComponent(newPhysics(10, 15))
+	actor.addComponent(newAnim("player"))
+	actor.addComponent(newCombat(100, 10))
 
 	return actor
 }
 
-func NewActor(x, y, w, h float64) *Actor {
-	actor := &Actor{
-		IsPlayer: false,
+func newActor(x, y, w, h float64) *actor {
+	actor := &actor{
+		isPlayer: false,
 	}
 
-	actor.AddComponent(NewPhysics(w, h))
-	actor.MoveTo(pixel.V((x*2)+w, (y*2)+h))
+	actor.addComponent(newPhysics(w, h))
+	actor.moveTo(pixel.V((x*2)+w, (y*2)+h))
 
 	return actor
 }
 
-func (a *Actor) SetTag(tag actorType) {
-	a.Tag = tag
+func (a *actor) setTag(tag actorType) {
+	a.tag = tag
 }
 
-func (a *Actor) AddComponent(c Component) {
-	c.SetRef(a)
-	a.Components = append(a.Components, c)
-}
-
-func (a *Actor) Update() {
-	for _, component := range a.Components {
-		component.Update()
-	}
-}
-
-func (a *Actor) Draw() {
-	var anim *Anim
-	var phys *Phys
-	for _, c := range a.Components {
-		if c.GetType() == Animation {
-			anim = c.(*Anim)
-		}
-		if c.GetType() == Physics {
-			phys = c.(*Phys)
+func (a *actor) addComponent(c component) {
+	for _, existing := range a.components {
+		if reflect.TypeOf(c) == reflect.TypeOf(existing) {
+			panic(fmt.Sprintf(
+				"attempt to add new component with existing type: %v",
+				reflect.TypeOf(c)))
 		}
 	}
-	if anim == nil || phys == nil {
-		return
-	}
-
-	if anim.Sprite == nil {
-		anim.Sprite = pixel.NewSprite(nil, pixel.Rect{})
-	}
-
-	// draw the correct frame with the correct position and direction
-	anim.Sprite.Set(anim.Sheet, anim.Frame)
-	anim.Sprite.Draw(a.refScene.Canvas, pixel.IM.
-		ScaledXY(pixel.ZV, pixel.V(
-			anim.Sprite.Frame().W()/32,
-			anim.Sprite.Frame().H()/32,
-			//phys.Rect.W()/anim.Sprite.Frame().W(),
-			//phys.Rect.H()/anim.Sprite.Frame().H(),
-		)).
-		ScaledXY(pixel.ZV, pixel.V(anim.Dir, 1)).Moved(phys.Rect.Center()),
-	)
+	c.setRef(a)
+	a.components = append(a.components, c)
 }
 
-func (a *Actor) MoveTo(vec pixel.Vec) {
-	p := *a.GetComponent(Physics)
-	if p == nil {
-		return
-	}
-	phys := p.(*Phys)
-
-	phys.Rect = phys.Rect.Moved(vec)
-}
-
-func (a *Actor) GetPos() pixel.Vec {
-	p := *a.GetComponent(Physics)
-	if p == nil {
-		return pixel.V(0, 0)
-	}
-	phys := p.(*Phys)
-
-	return phys.Rect.Center()
-}
-
-func (a *Actor) GetComponent(t componentType) *Component {
-	for _, c := range a.Components {
-		if c.GetType() == t {
+func (a *actor) getComponent(t componentType) *component {
+	for _, c := range a.components {
+		if c.getType() == t {
 			return &c
 		}
 	}
 	return nil
 }
 
-func (a *Actor) Destroy() {
-	a.Components = []Component{}
-	for i, ac := range a.refScene.Actors {
-		if len(ac.Components) <= 0 {
-			a.refScene.Actors = append(a.refScene.Actors[:i], a.refScene.Actors[i+1:]...)
+func (a *actor) update() {
+	for _, component := range a.components {
+		component.update()
+	}
+}
+
+func (a *actor) draw() {
+	var anm *anim
+	var phs *phys
+	for _, c := range a.components {
+		if c.getType() == Animation {
+			anm = c.(*anim)
+		}
+		if c.getType() == Physics {
+			phs = c.(*phys)
+		}
+	}
+	if anm == nil || phs == nil {
+		return
+	}
+
+	if anm.sprite == nil {
+		anm.sprite = pixel.NewSprite(nil, pixel.Rect{})
+	}
+
+	// draw the correct frame with the correct position and direction
+	anm.sprite.Set(anm.sheet, anm.frame)
+	anm.sprite.Draw(a.refScene.canvas, pixel.IM.
+		ScaledXY(pixel.ZV, pixel.V(
+			anm.sprite.Frame().W()/32,
+			anm.sprite.Frame().H()/32,
+			//phs.rect.W()/anm.sprite.frame().W(),
+			//phs.rect.H()/anm.sprite.frame().H(),
+		)).
+		ScaledXY(pixel.ZV, pixel.V(anm.dir, 1)).Moved(phs.rect.Center()),
+	)
+}
+
+func (a *actor) moveTo(vec pixel.Vec) {
+	p := *a.getComponent(Physics)
+	if p == nil {
+		return
+	}
+	phys := p.(*phys)
+
+	phys.rect = phys.rect.Moved(vec)
+}
+
+func (a *actor) getPos() pixel.Vec {
+	p := *a.getComponent(Physics)
+	if p == nil {
+		return pixel.V(0, 0)
+	}
+	phys := p.(*phys)
+
+	return phys.rect.Center()
+}
+
+func (a *actor) destroy() {
+	a.components = []component{}
+	for i, ac := range a.refScene.actors {
+		if len(ac.components) <= 0 {
+			a.refScene.actors = append(a.refScene.actors[:i], a.refScene.actors[i+1:]...)
 		}
 	}
 }
 
-func (a *Actor) isCollidable() bool {
-	return a.Tag == Solid ||
-		a.Tag == Enemy ||
-		a.Tag == NPC
+func (a *actor) isCollidable() bool {
+	return a.tag == Solid ||
+		a.tag == Enemy ||
+		a.tag == NPC
 }

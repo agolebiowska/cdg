@@ -10,9 +10,9 @@ var (
 	Interaction componentType = "interaction"
 )
 
-type Component interface {
-	GetType() componentType
-	SetRef(a *Actor)
-	Update()
+type component interface {
+	getType() componentType
+	setRef(a *actor)
+	update()
 	// TODO something like this
 }
