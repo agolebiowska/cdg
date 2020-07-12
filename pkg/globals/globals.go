@@ -22,6 +22,7 @@ type GlobalVars struct {
 	Assets         string
 	Maps           string
 	Actors         string
+	Dialogues      string
 	TileSize       float64
 	Ctrl           pixel.Vec
 	State          *State
@@ -40,6 +41,7 @@ var Global = &GlobalVars{
 	Assets:      "../../assets/",
 	Maps:        "../../assets/maps/",
 	Actors:      "../../assets/actors/",
+	Dialogues:   "../../assets/dialogues/",
 	TileSize:    32,
 	Ctrl:        pixel.ZV,
 	Debug:       false,

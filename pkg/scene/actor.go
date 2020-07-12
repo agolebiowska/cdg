@@ -81,6 +81,7 @@ func (a *actor) update() {
 func (a *actor) draw() {
 	var anm *anim
 	var phs *phys
+	var dlg *dial
 	for _, c := range a.components {
 		if c.getType() == Animation {
 			anm = c.(*anim)
@@ -88,7 +89,15 @@ func (a *actor) draw() {
 		if c.getType() == Physics {
 			phs = c.(*phys)
 		}
+		if c.getType() == Dialogue {
+			dlg = c.(*dial)
+		}
 	}
+
+	if dlg != nil {
+		dlg.draw()
+	}
+
 	if anm == nil || phs == nil {
 		return
 	}
@@ -103,8 +112,6 @@ func (a *actor) draw() {
 		ScaledXY(pixel.ZV, pixel.V(
 			anm.sprite.Frame().W()/32,
 			anm.sprite.Frame().H()/32,
-			//phs.rect.W()/anm.sprite.frame().W(),
-			//phs.rect.H()/anm.sprite.frame().H(),
 		)).
 		ScaledXY(pixel.ZV, pixel.V(anm.dir, 1)).Moved(phs.rect.Center()),
 	)

@@ -59,7 +59,7 @@ func New(from string) *scene {
 			case "npc":
 				a := newActor(center.X+o.X, center.Y+o.Y, 16, 16)
 				a.addComponent(newAnim(o.Name))
-				a.addComponent(newDialogue([]string{"HI", "WHATS UP?", "SURE", "C MON"}))
+				a.addComponent(newDialogue("npc0"))
 				a.setTag(NPC)
 				scene.add(a)
 			}

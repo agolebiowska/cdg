@@ -57,6 +57,9 @@ func run() {
 
 		Global.Win.Clear(colornames.Black)
 
+		//gui.Update()
+		//gui.Draw()
+
 		startScene.Update()
 		startScene.Draw()
 		Global.Win.Update()

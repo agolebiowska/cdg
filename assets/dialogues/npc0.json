@@ -1,0 +1,228 @@
+{
+  "passages": [
+    {
+      "text": "Don't you know?\n\n[[I'm not sure.|I would go to the next room If I were you.]]\n[[I think I know.|I would go to the next room If I were you.]]\n[[How can I know?|I'm wrong person to ask this question.]]",
+      "links": [
+        {
+          "name": "I'm not sure.|I would go to the next room If I were you.",
+          "link": "I'm not sure.|I would go to the next room If I were you."
+        },
+        {
+          "name": "I think I know.|I would go to the next room If I were you.",
+          "link": "I think I know.|I would go to the next room If I were you."
+        },
+        {
+          "name": "How can I know?|I'm wrong person to ask this question.",
+          "link": "How can I know?|I'm wrong person to ask this question."
+        }
+      ],
+      "name": "Don't you know?",
+      "pid": "1",
+      "position": {
+        "x": "449",
+        "y": "522"
+      }
+    },
+    {
+      "text": "Hello\n\n[[Who are you?|Is it important?]]\n\n[[Where am I?|Don't you know?]]\n\n[[Hello|It starts right there, in the next room.]]",
+      "links": [
+        {
+          "name": "Who are you?|Is it important?",
+          "link": "Who are you?|Is it important?"
+        },
+        {
+          "name": "Where am I?|Don't you know?",
+          "link": "Where am I?|Don't you know?"
+        },
+        {
+          "name": "Hello|It starts right there, in the next room.",
+          "link": "Hello|It starts right there, in the next room."
+        }
+      ],
+      "name": "Hello",
+      "pid": "2",
+      "position": {
+        "x": "220",
+        "y": "446"
+      }
+    },
+    {
+      "text": "Is it important?\n\n[[Yeah, it is.|Just call me John. You can start in the next room you know. ]]\n[[It's not.|It starts in the next room.]]",
+      "links": [
+        {
+          "name": "Yeah, it is.|Just call me John. You can start in the next room you know. ",
+          "link": "Yeah, it is.|Just call me John. You can start in the next room you know. "
+        },
+        {
+          "name": "It's not.|It starts in the next room.",
+          "link": "It's not.|It starts in the next room."
+        }
+      ],
+      "name": "Is it important?",
+      "pid": "3",
+      "position": {
+        "x": "508",
+        "y": "133"
+      }
+    },
+    {
+      "text": "It starts right there, in the next room.\n\n[[Thanks|You're welcome.]]",
+      "links": [
+        {
+          "name": "Thanks|You're welcome.",
+          "link": "Thanks|You're welcome."
+        }
+      ],
+      "name": "It starts right there, in the next room.",
+      "pid": "4",
+      "position": {
+        "x": "460",
+        "y": "901"
+      }
+    },
+    {
+      "text": "You're welcome.",
+      "name": "You're welcome.",
+      "pid": "5",
+      "position": {
+        "x": "679",
+        "y": "897"
+      }
+    },
+    {
+      "text": "Just call me John. You can start in the next room you know. ",
+      "name": "Just call me John. You can start in the next room you know. ",
+      "pid": "6",
+      "position": {
+        "x": "721",
+        "y": "48"
+      }
+    },
+    {
+      "text": "It starts in the next room.",
+      "name": "It starts in the next room.",
+      "pid": "7",
+      "position": {
+        "x": "721",
+        "y": "192"
+      }
+    },
+    {
+      "text": "I would go to the next room If I were you.",
+      "name": "I would go to the next room If I were you.",
+      "pid": "8",
+      "position": {
+        "x": "764",
+        "y": "410"
+      }
+    },
+    {
+      "text": "I'm wrong person to ask this question.\n\n[[Is there any question that you can answer?|Yes.]]",
+      "links": [
+        {
+          "name": "Is there any question that you can answer?|Yes.",
+          "link": "Is there any question that you can answer?|Yes."
+        }
+      ],
+      "name": "I'm wrong person to ask this question.",
+      "pid": "9",
+      "position": {
+        "x": "587",
+        "y": "709"
+      }
+    },
+    {
+      "text": "Yes.\n\n[[...|...]]",
+      "links": [
+        {
+          "name": "...|...",
+          "link": "...|..."
+        }
+      ],
+      "name": "Yes.",
+      "pid": "10",
+      "position": {
+        "x": "822",
+        "y": "722"
+      }
+    },
+    {
+      "text": "...\n\n[[Well?|What?]]",
+      "links": [
+        {
+          "name": "Well?|What?",
+          "link": "Well?|What?"
+        }
+      ],
+      "name": "...",
+      "pid": "11",
+      "position": {
+        "x": "1034",
+        "y": "733"
+      }
+    },
+    {
+      "text": "What?\n\n[[What is that you can answer?|\"What can I do here next?\"]]",
+      "links": [
+        {
+          "name": "What is that you can answer?|\"What can I do here next?\"",
+          "link": "What is that you can answer?|\"What can I do here next?\""
+        }
+      ],
+      "name": "What?",
+      "pid": "12",
+      "position": {
+        "x": "1205",
+        "y": "721"
+      }
+    },
+    {
+      "text": "\"What can I do here next?\"\n\n[[This is stupid.|...2]]\n[[What can I do here next?|You can go to the next room.]]",
+      "links": [
+        {
+          "name": "This is stupid.|...2",
+          "link": "This is stupid.|...2"
+        },
+        {
+          "name": "What can I do here next?|You can go to the next room.",
+          "link": "What can I do here next?|You can go to the next room."
+        }
+      ],
+      "name": "\"What can I do here next?\"",
+      "pid": "13",
+      "position": {
+        "x": "1366",
+        "y": "663"
+      }
+    },
+    {
+      "text": "...\n\n[[What can I do here next?|You can go to the next room.]]",
+      "links": [
+        {
+          "name": "What can I do here next?|You can go to the next room.",
+          "link": "What can I do here next?|You can go to the next room."
+        }
+      ],
+      "name": "...2",
+      "pid": "14",
+      "position": {
+        "x": "1609",
+        "y": "579"
+      }
+    },
+    {
+      "text": "You can go to the next room.",
+      "name": "You can go to the next room.",
+      "pid": "15",
+      "position": {
+        "x": "1680",
+        "y": "778"
+      }
+    }
+  ],
+  "name": "Dream",
+  "startnode": "2",
+  "creator": "Twine",
+  "creator-version": "2.3.8",
+  "ifid": "297E2AC4-D2A9-4C51-8266-8722FC59BE17"
+}

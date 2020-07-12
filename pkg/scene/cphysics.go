@@ -74,7 +74,7 @@ func (p *phys) update() {
 					return
 				}
 				dial := d.(*dial)
-				dial.talk(a)
+				dial.talk(p.refActor)
 			}
 		}
 
